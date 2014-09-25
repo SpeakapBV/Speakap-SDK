@@ -71,7 +71,8 @@ function validateSignature(params, appSecret) {
  *       scheme: "https",
  *       hostname: "api.speakap.io",
  *       appId: MY_APP_ID,
- *       appSecret: MY_APP_SECRET
+ *       appSecret: MY_APP_SECRET,
+ *       apiVersion: "1.0.21"
  *   });
  *
  * Obviously, MY_APP_ID and MY_APP_SECRET should be replaced with your actual App ID and secret (or
@@ -112,6 +113,7 @@ function API(config) {
     this.hostname = config.hostname;
     this.appId = config.appId;
     this.appSecret = config.appSecret;
+    this.apiVersion = config.apiVersion || "1.0.21";
 
     this.accessToken = this.appId + "_" + this.appSecret;
 }
@@ -274,7 +276,7 @@ _.extend(API.prototype, {
         var buffer;
         var headers = {
             "Authorization": "Bearer " + this.accessToken,
-            "Accept": "application/vnd.speakap.api-v1.0.10+json"
+            "Accept": "application/vnd.speakap.api-v" + this.apiVersion + "+json"
         };
 
         if (data) {

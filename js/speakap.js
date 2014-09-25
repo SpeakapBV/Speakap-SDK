@@ -143,6 +143,42 @@
     };
 
     /**
+     * Presents a confirmation lightbox to the user.
+     *
+     * This method provides a convenient way to present a confirmation lightbox, similar to
+     * JavaScript's native confirm() method, with an API that is much easier than creating a custom
+     * lightbox.
+     *
+     * @param options Required options object. May contain the following properties:
+     *                cancelLabel - The label to display on the cancel button (default: localized
+     *                              "Cancel").
+     *                confirmLabel - The label to display on the confirm button (default: localized
+     *                               "OK").
+     *                context - Context in which to execute the promise callbacks.
+     *                text - The text to display in the confirmation dialog. Only plain text is
+     *                       supported, with the exception of <b> and <i> tags and newlines.
+     *                title - The title to display on the confirmation dialog.
+     *
+     * @return jQuery Deferred promise that gets fulfilled when the lightbox is confirmed, or failed
+     *         when the lightbox is cancelled.
+     */
+    Speakap.prototype.confirm = function(options) {
+
+        var data = {};
+        for (var key in options) {
+            if (options.hasOwnProperty(key) && key !== "context") {
+                var value = options[key];
+                data[key] = value.toString();
+            }
+        }
+
+        return this._call("confirm", data, {
+            context: options.context,
+            expectResult: true
+        });
+    };
+
+    /**
      * Retrieves the currently logged in user.
      *
      * This method returns a $.Deferred object that is resolved with the user object as first
@@ -515,7 +551,7 @@
                 delete calls[data.callId];
 
                 var deferred = callback.deferred;
-                if (data.error.code === 0) {
+                if (data.error && data.error.code === 0) {
                     deferred.resolveWith(callback.context, [data.result]);
                 } else {
                     deferred.rejectWith(callback.context, [data.error]);
