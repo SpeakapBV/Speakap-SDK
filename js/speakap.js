@@ -446,7 +446,7 @@
      *     memberId - EID of the selected member.
      *     memberIds - Array of EIDs of the selected members.
      *
-     * Note: If some situations when you use the selectedMemberIds option, there may be a short
+     * Note: In some situations when you use the selectedMemberIds option, there may be a short
      *       delay between calling the method and the moment the lightbox opens, so it is advised to
      *       display some loading indicator when you use this option.
      */
