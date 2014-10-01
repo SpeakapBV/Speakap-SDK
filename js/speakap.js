@@ -425,9 +425,52 @@
     };
 
     /**
+     * Opens a lightbox for selecting network members.
+     *
+     * @param options Optional options object. May contain the following properties:
+     *                context - Context in which to execute the promise callbacks.
+     *                description - Description text informing the user what to do.
+     *                excludedUserIds - Array of EIDs of users which may not be selected.
+     *                                  By default, only the logged in user may not be selected.
+     *                selectedMemberIds - Optional array of pre-selected member EIDs.
+     *                selectMultiple - Boolean determining whether multiple members may be
+     *                                 selected (default: true).
+     *                submitButtonLabel - Label of the select button.
+     *                title - Lightbox title.
+     *
+     * @return jQuery Deferred promise that gets fulfilled when one or more members have been
+     *         selected, or failed when the action is canceled.
+     *
+     * When one or more members have been selected, the promise callback receives a data parameter
+     * containing a single property, depending on the value of the selectMultiple option:
+     *     memberId - EID of the selected member.
+     *     memberIds - Array of EIDs of the selected members.
+     *
+     * Note: If some situations when you use the selectedMemberIds option, there may be a short
+     *       delay between calling the method and the moment the lightbox opens, so it is advised to
+     *       display some loading indicator when you use this option.
+     */
+    Speakap.prototype.selectMembers = function(options) {
+
+        options = options || {};
+
+        return this._call("selectMembers", {
+            description: (options.description ? "" + options.description : ""),
+            excludedUserIds: options.excludedUserIds,
+            selectedMemberIds: options.excludedMemberIds,
+            selectMultiple: (options.selectMultiple !== false),
+            submitButtonLabel: (options.submitButtonLabel ? "" + options.submitButtonLabel : ""),
+            title: (options.title ? "" + options.title : "")
+        }, {
+            context: options.context,
+            expectResult: true
+        });
+    };
+
+    /**
      * Opens a lightbox for selecting a network role.
      *
-     * @param options Optional options object. May contain the following property:
+     * @param options Optional options object. May contain the following properties:
      *                context - Context in which to execute the promise callbacks.
      *                description - Description text informing the user what to do.
      *
