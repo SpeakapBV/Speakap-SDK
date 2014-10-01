@@ -430,8 +430,8 @@
      * @param options Optional options object. May contain the following properties:
      *                context - Context in which to execute the promise callbacks.
      *                description - Description text informing the user what to do.
-     *                excludedUserIds - Array of EIDs of users which may not be selected.
-     *                                  By default, only the logged in user may not be selected.
+     *                excludedMemberIds - Array of EIDs of members which may not be selected.
+     *                                    By default, only the logged in user may not be selected.
      *                selectedMemberIds - Optional array of pre-selected member EIDs.
      *                selectMultiple - Boolean determining whether multiple members may be
      *                                 selected (default: true).
@@ -456,8 +456,8 @@
 
         return this._call("selectMembers", {
             description: (options.description ? "" + options.description : ""),
-            excludedUserIds: options.excludedUserIds,
-            selectedMemberIds: options.excludedMemberIds,
+            excludedUserIds: options.excludedMemberIds,
+            selectedMemberIds: options.selectedMemberIds,
             selectMultiple: (options.selectMultiple !== false),
             submitButtonLabel: (options.submitButtonLabel ? "" + options.submitButtonLabel : ""),
             title: (options.title ? "" + options.title : "")
