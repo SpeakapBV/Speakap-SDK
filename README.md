@@ -16,7 +16,7 @@ the file is dependent on jQuery (you can use the `jquery.min.js` from the `js` d
 don't have jQuery in your project yet).
 
 For more information on how to use the frontend library, see:
-                                  http://developers.speakap.io/portal/tutorials/frontend_proxy.html
+                                  http://developer.speakap.io/communicating-with-the-speakap-frontend/
 
 We also have a server-side JavaScript library for usage with Node.js. Just copy `speakap.js` from
 the `node` directory into your project and require it to get going. There is inline documentation in
