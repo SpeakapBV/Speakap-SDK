@@ -72,7 +72,7 @@ function validateSignature(params, appSecret) {
  *       hostname: "api.speakap.io",
  *       appId: MY_APP_ID,
  *       appSecret: MY_APP_SECRET,
- *       apiVersion: "1.0.21"
+ *       apiVersion: "1.1"
  *   });
  *
  * Obviously, MY_APP_ID and MY_APP_SECRET should be replaced with your actual App ID and secret (or
@@ -113,9 +113,11 @@ function API(config) {
     this.hostname = config.hostname;
     this.appId = config.appId;
     this.appSecret = config.appSecret;
-    this.apiVersion = config.apiVersion || "1.0.21";
+    this.apiVersion = config.apiVersion || "1.1";
 
-    this.accessToken = this.appId + "_" + this.appSecret;
+    if (this.appId && this.appSecret) {
+        this.accessToken = this.appId + "_" + this.appSecret;
+    }
 }
 
 _.extend(API.prototype, {
@@ -124,7 +126,13 @@ _.extend(API.prototype, {
      * Performs a DELETE request to the Speakap API.
      *
      * @param path The path of the REST endpoint, including optional query parameters.
-     * @param callback Callback that receives the result of the request. It received two parameters:
+     * @param options Optional options object. May contain the following properties:
+     *                accept - MIME type of the API response to accept. By default, this is
+     *                         "application/vnd.speakap.api-v<apiVersion>+json".
+     *                accessToken - Access token to use for authorizing the request. By default,
+     *                              the access token is based on the App ID and App Secret given
+     *                              when initializing the API class.
+     * @param callback Callback that receives the result of the request. It receives two parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -141,16 +149,22 @@ _.extend(API.prototype, {
      *       }
      *   });
      */
-    "delete": function(path, callback) {
+    "delete": function(path, options, callback) {
 
-        this._request("DELETE", path, null, callback);
+        this.request("DELETE", path, null, options, callback);
     },
 
     /**
      * Performs a GET request to the Speakap API.
      *
      * @param path The path of the REST endpoint, including optional query parameters.
-     * @param callback Callback that receives the result of the request. It received two parameters:
+     * @param options Optional options object. May contain the following properties:
+     *                accept - MIME type of the API response to accept. By default, this is
+     *                         "application/vnd.speakap.api-v<apiVersion>+json".
+     *                accessToken - Access token to use for authorizing the request. By default,
+     *                              the access token is based on the App ID and App Secret given
+     *                              when initializing the API class.
+     * @param callback Callback that receives the result of the request. It receives two parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -168,9 +182,9 @@ _.extend(API.prototype, {
      *       }
      *   });
      */
-    get: function(path, callback) {
+    get: function(path, options, callback) {
 
-        this._request("GET", path, null, callback);
+        this.request("GET", path, null, options, callback);
     },
 
     /**
@@ -178,7 +192,15 @@ _.extend(API.prototype, {
      *
      * @param path The path of the REST endpoint, including optional query parameters.
      * @param data Object representing the JSON object to submit.
-     * @param callback Callback that receives the result of the request. It received two parameters:
+     * @param options Optional options object. May contain the following properties:
+     *                accept - MIME type of the API response to accept. By default, this is
+     *                         "application/vnd.speakap.api-v<apiVersion>+json".
+     *                accessToken - Access token to use for authorizing the request. By default,
+     *                              the access token is based on the App ID and App Secret given
+     *                              when initializing the API class.
+     *                contentType - MIME type of the data to submit. By default, this is
+     *                              "application/json".
+     * @param callback Callback that receives the result of the request. It receives two parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -203,17 +225,26 @@ _.extend(API.prototype, {
      *       }
      *   });
      */
-    post: function(path, data, callback) {
+    post: function(path, data, options, callback) {
 
-        this._request("POST", path, JSON.stringify(data), "application/json", callback);
+        this.request("POST", path, JSON.stringify(data), options, callback);
     },
 
     /**
      * Performs a POST request to an action endpoint in the Speakap API.
      *
      * @param path The path of the REST endpoint, including optional query parameters.
-     * @param data Optional object containing the form parameters to submit.
-     * @param callback Callback that receives the result of the request. It received two parameters:
+     * @param data Object containing the form parameters to submit. Use null if there is no data to
+     *             submit.
+     * @param options Optional options object. May contain the following properties:
+     *                accept - MIME type of the API response to accept. By default, this is
+     *                         "application/vnd.speakap.api-v<apiVersion>+json".
+     *                accessToken - Access token to use for authorizing the request. By default,
+     *                              the access token is based on the App ID and App Secret given
+     *                              when initializing the API class.
+     *                contentType - MIME type of the data to submit. By default, this is
+     *                              "application/x-www-form-urlencoded".
+     * @param callback Callback that receives the result of the request. It receives two parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -222,8 +253,8 @@ _.extend(API.prototype, {
      *
      * Example:
      *
-     *   speakapApi.postAction("/networks/" + networkId +
-     *                         "/messages/" + messageId + "/markread", function(error, result) {
+     *   speakapApi.postAction("/networks/" + networkId + "/messages/" + messageId + "/markread"
+     *                         null, function(error, result) {
      *       if (error) {
      *           // handle error
      *       } else {
@@ -231,16 +262,22 @@ _.extend(API.prototype, {
      *       }
      *   });
      */
-    postAction: function(path, data, callback) {
+    postAction: function(path, data, options, callback) {
 
         if (data) {
-            var params = _.map(data, function(value, key) {
-                params.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
-            });
-            data = params.join("&");
+            data = _.map(data, function(value, key) {
+                return encodeURIComponent(key) + "=" + encodeURIComponent(value);
+            }).join("&");
         }
 
-        this._request("POST", path, data, "application/x-www-form-urlencoded", callback);
+        if (!_.isObject(options) || _.isFunction(options)) {
+            callback = options;
+            options = {};
+        }
+
+        this._request("POST", path, data,
+                      _.extend({ contentType: "application/x-www-form-urlencoded" }, options),
+                      callback);
     },
 
     /**
@@ -248,7 +285,15 @@ _.extend(API.prototype, {
      *
      * @param path The path of the REST endpoint, including optional query parameters.
      * @param data Object representing the JSON object to submit.
-     * @param callback Callback that receives the result of the request. It received two parameters:
+     * @param options Optional options object. May contain the following properties:
+     *                accept - MIME type of the API response to accept. By default, this is
+     *                         "application/vnd.speakap.api-v<apiVersion>+json".
+     *                accessToken - Access token to use for authorizing the request. By default,
+     *                              the access token is based on the App ID and App Secret given
+     *                              when initializing the API class.
+     *                contentType - MIME type of the data to submit. By default, this is
+     *                              "application/json".
+     * @param callback Callback that receives the result of the request. It receives two parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -257,8 +302,8 @@ _.extend(API.prototype, {
      *
      * Example:
      *
-     *   speakapApi.get("/networks/" + networkId + "/timeline/" +
-     *                  "?embed=messages.author", function(error, result) {
+     *   speakapApi.put("/networks/" + networkId + "/messages/" + messageId + "/",
+     *                  { commentable: false }, function(error, result) {
      *       if (error) {
      *           // handle error
      *       } else {
@@ -266,25 +311,68 @@ _.extend(API.prototype, {
      *       }
      *   });
      */
-    put: function(path, data, callback) {
+    put: function(path, data, options, callback) {
 
-        this._request("PUT", path, JSON.stringify(data), "application/json", callback);
+        this._request("PUT", path, JSON.stringify(data), options, callback);
     },
 
-    _request: function(method, path, data, contentType, callback) {
+    /**
+     * Performs an HTTP request to the Speakap API.
+     *
+     * @param method The HTTP method to use, e.g. "POST". See the delete(), get(), post(),
+     *               postAction() and put() methods for convenience methods for submitting specific
+     *               types of requests.
+     * @param path The path of the REST endpoint, including optional query parameters.
+     * @param data String containing the data to submit. Use null if there is no data to submit.
+     * @param options Optional options object. May contain the following properties:
+     *                accept - MIME type of the API response to accept. By default, this is
+     *                         "application/vnd.speakap.api-v<apiVersion>+json".
+     *                accessToken - Access token to use for authorizing the request. By default,
+     *                              the access token is based on the App ID and App Secret given
+     *                              when initializing the API class.
+     *                contentType - MIME type of the data to submit. By default, this is
+     *                              "application/json".
+     * @param callback Callback that receives the result of the request. It receives two parameters:
+     *                 error - Error object with code and message properties if the request failed.
+     *                 result - Parsed JSON response.
+     *
+     * @return A tuple containing the parsed JSON reply (in case of success) and an error object
+     *         (in case of an error).
+     *
+     * Example:
+     *
+     *   speakapApi.request("PUT", "/networks/" + networkId + "/messages/" + messageId + "/",
+     *                      { commentable: false }, {}, function(error, result) {
+     *       if (error) {
+     *           // handle error
+     *       } else {
+     *           // do something with result
+     *       }
+     *   });
+     */
+    request: function(method, path, data, options, callback) {
 
-        var buffer;
+        if (!_.isObject(options) || _.isFunction(options)) {
+            callback = options;
+            options = {};
+        }
+
         var headers = {
-            "Authorization": "Bearer " + this.accessToken,
-            "Accept": "application/vnd.speakap.api-v" + this.apiVersion + "+json"
+            "Accept": options.accept || "application/vnd.speakap.api-v" + this.apiVersion + "+json"
         };
 
+        var accessToken = options.accessToken || this.accessToken;
+        if (accessToken) {
+            headers["Authorization"] = "Bearer " + accessToken;
+        }
+
+        var buffer;
         if (data) {
             buffer = new Buffer(data);
             headers["Content-length"] = buffer.length;
+
+            var contentType = options.contentType || "application/json";
             headers["Content-type"] = contentType + "; charset=utf-8";
-        } else {
-            callback = contentType;
         }
 
         var req = this.scheme.request({
