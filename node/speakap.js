@@ -132,7 +132,8 @@ _.extend(API.prototype, {
      *                accessToken - Access token to use for authorizing the request. By default,
      *                              the access token is based on the App ID and App Secret given
      *                              when initializing the API class.
-     * @param callback Callback that receives the result of the request. It receives two parameters:
+     * @param callback Optional callback that receives the result of the request. It receives two
+     *                 parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -164,7 +165,8 @@ _.extend(API.prototype, {
      *                accessToken - Access token to use for authorizing the request. By default,
      *                              the access token is based on the App ID and App Secret given
      *                              when initializing the API class.
-     * @param callback Callback that receives the result of the request. It receives two parameters:
+     * @param callback Optional callback that receives the result of the request. It receives two
+     *                 parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -200,7 +202,8 @@ _.extend(API.prototype, {
      *                              when initializing the API class.
      *                contentType - MIME type of the data to submit. By default, this is
      *                              "application/json".
-     * @param callback Callback that receives the result of the request. It receives two parameters:
+     * @param callback Optional callback that receives the result of the request. It receives two
+     *                 parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -244,7 +247,8 @@ _.extend(API.prototype, {
      *                              when initializing the API class.
      *                contentType - MIME type of the data to submit. By default, this is
      *                              "application/x-www-form-urlencoded".
-     * @param callback Callback that receives the result of the request. It receives two parameters:
+     * @param callback Optional callback that receives the result of the request. It receives two
+     *                 parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -293,7 +297,8 @@ _.extend(API.prototype, {
      *                              when initializing the API class.
      *                contentType - MIME type of the data to submit. By default, this is
      *                              "application/json".
-     * @param callback Callback that receives the result of the request. It receives two parameters:
+     * @param callback Optional callback that receives the result of the request. It receives two
+     *                 parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -332,7 +337,8 @@ _.extend(API.prototype, {
      *                              when initializing the API class.
      *                contentType - MIME type of the data to submit. By default, this is
      *                              "application/json".
-     * @param callback Callback that receives the result of the request. It receives two parameters:
+     * @param callback Optional callback that receives the result of the request. It receives two
+     *                 parameters:
      *                 error - Error object with code and message properties if the request failed.
      *                 result - Parsed JSON response.
      *
@@ -404,11 +410,15 @@ _.extend(API.prototype, {
                     };
                 }
 
-                callback(error, result);
+                if (callback) {
+                    callback(error, result);
+                }
             });
         });
         req.on("error", function(error) {
-            callback({ code: -1000, message: "Request Failed", requestError: error });
+            if (callback) {
+                callback({ code: -1000, message: "Request Failed", requestError: error });
+            }
         });
 
         if (buffer) {
