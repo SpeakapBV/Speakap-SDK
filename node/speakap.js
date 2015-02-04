@@ -364,12 +364,12 @@ _.extend(API.prototype, {
         }
 
         var headers = {
-            "Accept": options.accept || "application/vnd.speakap.api-v" + this.apiVersion + "+json"
+            Accept: options.accept || "application/vnd.speakap.api-v" + this.apiVersion + "+json"
         };
 
         var accessToken = options.accessToken || this.accessToken;
         if (accessToken) {
-            headers["Authorization"] = "Bearer " + accessToken;
+            headers.Authorization = "Bearer " + accessToken;
         }
 
         var buffer;
