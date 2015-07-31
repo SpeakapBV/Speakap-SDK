@@ -248,6 +248,19 @@
     };
 
     /**
+     * Opens the application in Speakap, optionally passing in appData.
+     *
+     * This only works if the application has defined an entry for the "main" position and is
+     * intended for widget positions to link to the main position.
+     *
+     * @param appData Optional appData to pass. This data can be read by the opened application.
+     */
+    Speakap.prototype.openAppLink = function(appData) {
+
+        return this._call("openAppLink", { appData: appData ? appData.toString() : '' });
+    };
+
+    /**
      * Presents a lightbox to the user.
      *
      * The lightbox contains an iframe of which the content is provided by your application and
@@ -407,6 +420,24 @@
             context: options.context,
             expectResult: true
         });
+    };
+
+    /**
+     * Opens a URL in a new window/tab. Subsequent calls to this method will open the method in the
+     * same window or tab.
+     *
+     * Because of sandbox restrictions, applications are not allowed to open links. This method
+     * still allows opening of links, if only in a new window.
+     *
+     * @param url The URL to open. Must be an absolute URL.
+     */
+    Speakap.prototype.openUrl = function(url) {
+
+        if (typeof url !== 'string') {
+            throw new Error('URL must be a string');
+        }
+
+        return this._call("openUrl", { url: url });
     };
 
     /**
