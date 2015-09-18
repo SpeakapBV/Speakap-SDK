@@ -7,6 +7,7 @@ import httplib
 import iso8601
 import json
 import logging
+import platform
 
 from datetime import datetime;
 from datetime import timedelta;
@@ -245,7 +246,11 @@ class API:
     def _request(self, method, path, data=None):
         headers = {
             "Authorization": "Bearer " + self.access_token,
-            "User-Agent": "Speakap-SDK/python"
+            "User-Agent": "Speakap-SDK python/1.0.1 (%s %s) Python/%s" % (
+                platform.system(),
+                platform.release(),
+                platform.python_version(),
+            )
         }
         if self.api_version != "latest":
             headers["Accept"] = "application/vnd.speakap.api-v%s+json" % self.api_version
