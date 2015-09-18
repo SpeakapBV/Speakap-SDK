@@ -62,12 +62,12 @@ class API:
 
     You should instantiate the Speakap API as follows:
 
-      var Speakap = require("speakap");
       speakap_api = Speakap.API({
           "scheme": "https",
           "hostname": "api.speakap.io",
           "app_id": MY_APP_ID,
-          "app_secret": MY_APP_SECRET
+          "app_secret": MY_APP_SECRET,
+          "app_version": API_VERSION
       })
 
       Obviously, MY_APP_ID and MY_APP_SECRET should be replaced with your actual App ID and secret
@@ -98,6 +98,7 @@ class API:
         self.hostname = config["hostname"]
         self.app_id = config["app_id"]
         self.app_secret = config["app_secret"]
+        self.api_version = config["api_version"] if "api_version" in config else "latest"
 
         self.access_token = "%s_%s" % (self.app_id, self.app_secret)
 
@@ -242,7 +243,12 @@ class API:
             raise SignatureValidationError("Expired signature")
 
     def _request(self, method, path, data=None):
-        headers = {"Authorization": "Bearer " + self.access_token}
+        headers = {
+            "Authorization": "Bearer " + self.access_token,
+            "User-Agent": "Speakap-SDK/python"
+        }
+        if self.api_version != "latest":
+            headers["Accept"] = "application/vnd.speakap.api-v%s+json" % self.api_version
         if urlfetch:
             response = urlfetch.fetch(self.scheme + "://" + self.hostname + path,
                                       headers=headers,
