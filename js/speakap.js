@@ -597,7 +597,7 @@
         if (this.token) {
             this.doHandshake = this._call("handshake", { token: this.token }, {
                 expectResult: true
-            })
+            });
         } else {
             this.doHandshake = this._call("handshake", { signedRequest: this.signedRequest }, {
                 context: this,
