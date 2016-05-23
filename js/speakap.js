@@ -369,33 +369,22 @@
         var data = {};
         for (var key in options) {
             if (options.hasOwnProperty(key) && key !== "context") {
-                var value;
-                if (key === "events") {
-                    value = {};
-                    var events = options[key];
-                    for (var eventName in events) {
-                        if (events.hasOwnProperty(eventName)) {
-                            value[eventName] = events[eventName].toString();
-                        }
-                    }
-                } else {
-                    value = options[key];
+                var value = options[key];
 
-                    if (key === "buttons") {
-                        for (var i = 0; i < value.length; i++) {
-                            var button = value[i];
-                            if (button.label) {
-                                button.label = button.label.toString();
-                            } else {
-                                throw new Error("Buttons should have a label");
-                            }
-                            if (button.type !== "resolve" && button.type !== "close") {
-                                throw new Error("Button type must be 'resolve' or 'close'");
-                            }
+                if (key === "buttons") {
+                    for (var i = 0; i < value.length; i++) {
+                        var button = value[i];
+                        if (button.label) {
+                            button.label = button.label.toString();
+                        } else {
+                            throw new Error("Buttons should have a label");
                         }
-                    } else if (key === "title") {
-                        value = value.toString();
+                        if (button.type !== "resolve" && button.type !== "close") {
+                            throw new Error("Button type must be 'resolve' or 'close'");
+                        }
                     }
+                } else if (key === "title") {
+                    value = value.toString();
                 }
 
                 data[key] = value;
