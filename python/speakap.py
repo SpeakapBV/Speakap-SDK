@@ -68,7 +68,7 @@ class API:
           "hostname": "api.speakap.io",
           "app_id": MY_APP_ID,
           "app_secret": MY_APP_SECRET,
-          "app_version": API_VERSION
+          "api_version": API_VERSION
       })
 
       Obviously, MY_APP_ID and MY_APP_SECRET should be replaced with your actual App ID and secret
