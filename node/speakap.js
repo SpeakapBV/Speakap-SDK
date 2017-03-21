@@ -7,9 +7,9 @@ var SIGNATURE_WINDOW_SIZE = 60 * 1000; // ms
 
 function percentEncode(string) {
 
-    return encodeURIComponent(string).replace("!", "%21").replace("'", "%27")
-                                     .replace("(", "%28").replace(")", "%29")
-                                     .replace("*", "%2A");
+    return encodeURIComponent(string).replace(/!/g, '%21').replace(/'/g, '%27')
+                                     .replace(/\(/g, '%28').replace(/\)/g, '%29')
+                                     .replace(/\*/g, '%2A');
 }
 
 /**
